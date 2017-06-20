@@ -42,5 +42,9 @@ Here is a lit of resources that I have been working on.
 | VMCPU | VM CPU and NUMA configuration.|
 | VMSecureBoot | VM Secure boot configuration.|
 | VMBootOrder | VM boot order configuration.|
+| VMIPAddress | Injects an IP Address into a VM.|
+| VMDscConfigurationPublish | Publish configuration and DSC modules into a VM.|
+| VMDscConfigurationEnact | Enact a pending configuration inside a VM.|
+| WaitForVMGuestIntegration | Wait for VM guest integration service to become available.|
 
 The list above is a wishlist and not everything that we already have.
