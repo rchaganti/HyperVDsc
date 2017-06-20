@@ -43,8 +43,9 @@ Here is a lit of resources that I have been working on.
 | VMSecureBoot | VM Secure boot configuration.|
 | VMBootOrder | VM boot order configuration.|
 | VMIPAddress | Injects an IP Address into a VM.|
+| WaitForVMGuestIntegration | Wait for VM guest integration service to become available.|
 | VMDscConfigurationPublish | Publish configuration and DSC modules into a VM.|
 | VMDscConfigurationEnact | Enact a pending configuration inside a VM.|
-| WaitForVMGuestIntegration | Wait for VM guest integration service to become available.|
+| VMFile | Copy files and folders in to a VM.|
 
 The list above is a wishlist and not everything that we already have.
