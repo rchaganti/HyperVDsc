@@ -1,4 +1,4 @@
-#Desired State Configuration Resources for Microsoft Hyper-V#
+# Desired State Configuration Resources for Microsoft Hyper-V #
 This project aims to develop a set of PowereShell DSC resources for managing Windows Server Hyper-V resource configurations.
 
 There are existing resource modules that address some of these configurations.
@@ -16,7 +16,7 @@ So, the objectives of this HyperVDsc resource module is to ensure that
 
 To meet these objectives, I am starting this new repository and will start adding the new set of resources I have been developing. THe primary aim is to ensure we have broader coverage of resource configurations while we make each and every resource in this repository HQRM compliant. Where applicable and easy to manage, we will take the resources from the existing modules listed above to eliminate duplication of work. It may not always be possible if we don't like the current design. There is no point refactoring code when we can easily implement one from scratch.
 
-Here is a lit of resources that I have been working on.
+Here is a list of resources that I have been working on.
 
 | Resource Name  | Description |
 | -------------   | ------------- |
@@ -48,4 +48,4 @@ Here is a lit of resources that I have been working on.
 | VMDscConfigurationEnact | Enact a pending configuration inside a VM.|
 | VMFile | Copy files and folders in to a VM.|
 
-The list above is a wishlist and not everything that we already have.
+This list is a wishlist and not everything that we already have.
