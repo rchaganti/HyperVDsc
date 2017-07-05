@@ -49,3 +49,4 @@ Here are some examples that demonstrates how to use this resource.
             IPAddress = 'DHCP'
         }
     }
+

@@ -1,4 +1,4 @@
-[ClassVersion("1.0"), FriendlyName("VMDscConfigurationPublish")]
+[ClassVersion("1.0.0.0"), FriendlyName("VMDscConfigurationPublish")]
 class VMDscConfigurationPublish : OMI_BaseResource
 {
     [Key] String VMName;

@@ -1,9 +1,10 @@
 ﻿Configuration HostOSAdapter
 {
-    Import-DscResource -ModuleName cHyper-V -Name VMNetworkAdapter
+    Import-DscResource -ModuleName HyperVDsc -Name VMNetworkAdapter
     Import-DscResource -ModuleName PSDesiredStateConfiguration
 
-    VMNetworkAdapter HostOSAdapter {
+    VMNetworkAdapter HostOSAdapter
+    {
         Id = 'Management-NIC'
         Name = 'Management-NIC'
         SwitchName = 'SETSwitch'

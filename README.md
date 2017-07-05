@@ -20,7 +20,7 @@ Here is a list of resources that I have been working on.
 
 | Resource Name  | Description | Status in the repository |
 | -------------   | ------------- | ------- |
-| VMHostServerConfiguration | Server configuration items in Hyper-V host settings. | Not Available |
+| VMHostServerConfiguration | Server configuration items in Hyper-V host settings. |  [Available without tests](https://github.com/rchaganti/HyperVDsc/tree/dev/DSCResources/VMHostServerConfiguration). |
 | VMHostUserConfiguration | User Configuration items in Hyper-V host Settings. | Not Available |
 | VMHostLiveMigration | Live migration settings for the Hyper-V host.| Not Available |
 | VMHostReplication | Replication configuration for the Hyper-V host.| Not Available |

@@ -1,4 +1,4 @@
-[ClassVersion("1.0"), FriendlyName("VMDscConfigurationEnact")]
+[ClassVersion("1.0.0.0"), FriendlyName("VMDscConfigurationEnact")]
 class VMDscConfigurationEnact : OMI_BaseResource
 {
     [Key] String VMName;  

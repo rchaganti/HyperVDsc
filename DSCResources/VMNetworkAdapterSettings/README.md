@@ -76,3 +76,4 @@ The following examples demonstrate how to use this DSC resource.
             DeviceNaming = 'On'
         }
     }
+

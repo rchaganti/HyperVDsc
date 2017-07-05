@@ -1,4 +1,12 @@
-﻿#region localizeddata
+﻿#region helper modules
+$modulePath = Join-Path -Path (Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent) -ChildPath 'Modules'
+
+Import-Module -Name (Join-Path -Path $modulePath `
+                               -ChildPath (Join-Path -Path 'HyperVDsc.Helper' `
+                                                     -ChildPath 'HyperVDsc.Helper.psm1'))
+#endregion
+
+#region localizeddata
 if (Test-Path "${PSScriptRoot}\${PSUICulture}")
 {
     Import-LocalizedData -BindingVariable LocalizedData -filename VMDscConfigurationEnact.psd1 `

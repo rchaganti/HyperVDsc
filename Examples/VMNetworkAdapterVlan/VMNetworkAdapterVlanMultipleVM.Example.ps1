@@ -1,6 +1,6 @@
 ﻿Configuration HostOSAdapterVlan
 {
-    Import-DscResource -ModuleName cHyper-V -Name VMNetworkAdapterVlan
+    Import-DscResource -ModuleName HyperVDsc -Name VMNetworkAdapterVlan
     Import-DscResource -ModuleName PSDesiredStateConfiguration
 
     VMNetworkAdapterVlan VMMgmtAdapterVlan {

@@ -1,9 +1,10 @@
 ﻿Configuration VMAdapter
 {
-    Import-DscResource -ModuleName cHyper-V -Name VMNetworkAdapter
+    Import-DscResource -ModuleName HyperVDsc -Name VMNetworkAdapter
     Import-DscResource -ModuleName PSDesiredStateConfiguration
 
-    VMNetworkAdapter MyVM01NIC {
+    VMNetworkAdapter MyVM01NIC
+    {
         Id = 'MyVM01-NIC'
         Name = 'MyVM01-NIC'
         SwitchName = 'SETSwitch'
@@ -12,7 +13,8 @@
         Ensure = 'Present'
     }
 
-    VMNetworkAdapter MyVM02NIC {
+    VMNetworkAdapter MyVM02NIC
+    {
         Id = 'MyVM02-NIC'
         Name = 'MyVM02-NIC'
         SwitchName = 'SETSwitch'

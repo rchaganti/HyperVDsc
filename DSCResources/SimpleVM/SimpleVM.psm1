@@ -1,3 +1,11 @@
+#region helper modules
+$modulePath = Join-Path -Path (Split-Path -Path (Split-Path -Path $PSScriptRoot -Parent) -Parent) -ChildPath 'Modules'
+
+Import-Module -Name (Join-Path -Path $modulePath `
+                               -ChildPath (Join-Path -Path 'HyperVDsc.Helper' `
+                                                     -ChildPath 'HyperVDsc.Helper.psm1'))
+#endregion
+
 #region localizeddata
 if (Test-Path "${PSScriptRoot}\${PSUICulture}")
 {
@@ -563,53 +571,6 @@ function Test-TargetResource
     catch
     {
         throw $_
-    }
-}
-
-function Set-VMState
-{
-    param
-    (
-        [Parameter(Mandatory)]
-        [String]$VMName,
-
-        [Parameter(Mandatory)]
-        [ValidateSet("Running","Paused","Off")]
-        [String]$DesiredState,
-
-        [Parameter(Mandatory)]
-        [String]$CurrentState        
-    )
-
-    switch ($DesiredState)
-    {
-        'Running'
-        {   
-            # If VM is in paused state, use resume-vm to make it running
-            if ($CurrentState -eq 'Paused')
-            {
-                Resume-VM -Name $VMName
-            }
-
-            # If VM is Off, use start-vm to make it running
-            elseif ($CurrentState -eq "Off")
-            {
-                Start-VM -Name $VMName
-            }
-        }
-
-        'Paused'
-        {
-            if($CurrentState -ne 'Off')
-            {
-                Suspend-VM -Name $VMName
-            }
-        }
-
-        'Off'
-        {
-            Stop-VM -Name $Name -Force -WarningAction SilentlyContinue
-        }
     }
 }
 

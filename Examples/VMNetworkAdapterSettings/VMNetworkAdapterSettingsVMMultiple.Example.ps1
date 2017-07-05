@@ -1,9 +1,10 @@
 ﻿Configuration VMAdapterSettings
 {
-    Import-DscResource -ModuleName cHyper-V -Name VMNetworkAdapterSettings
+    Import-DscResource -ModuleName HyperVDsc -Name VMNetworkAdapterSettings
     Import-DscResource -ModuleName PSDesiredStateConfiguration
 
-    VMNetworkAdapterSettings VMAdapterSettings01 {
+    VMNetworkAdapterSettings VMAdapterSettings01
+    {
         Id = 'Management-NIC'
         Name = 'Management-NIC'
         VMName = 'DHCPVM01'
@@ -12,7 +13,8 @@
         DeviceNaming = 'On'
     }
 
-    VMNetworkAdapterSettings VMAdapterSettings02 {
+    VMNetworkAdapterSettings VMAdapterSettings02
+    {
         Id = 'App-NIC'
         Name = 'App-NIC'
         VMName = 'DHCPVM01'

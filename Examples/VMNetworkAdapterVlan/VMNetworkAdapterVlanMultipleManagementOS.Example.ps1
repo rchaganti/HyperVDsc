@@ -1,9 +1,10 @@
 ﻿Configuration HostOSAdapterVlan
 {
-    Import-DscResource -ModuleName cHyper-V -Name VMNetworkAdapterVlan
+    Import-DscResource -ModuleName HyperVDsc -Name VMNetworkAdapterVlan
     Import-DscResource -ModuleName PSDesiredStateConfiguration
 
-    VMNetworkAdapterVlan HostOSAdapterVlan {
+    VMNetworkAdapterVlan HostOSAdapterVlan
+    {
         Id = 'Management-NIC'
         Name = 'Management-NIC'
         VMName = 'ManagementOS'
@@ -11,7 +12,8 @@
         VlanId = 10
     }
 
-    VMNetworkAdapterVlan ClusterAdapterVlan {
+    VMNetworkAdapterVlan ClusterAdapterVlan
+    {
         Id = 'Cluster-NIC'
         Name = 'Cluster-NIC'
         VMName = 'ManagementOS'
@@ -20,7 +22,8 @@
     }
 
     #The following configuration removes any VLAN setting, if present.
-    VMNetworkAdapterVlan JustAnotherAdapterVlan {
+    VMNetworkAdapterVlan JustAnotherAdapterVlan
+    {
         Id = 'JustAnother-NIC'
         Name = 'JustAnother-NIC'
         VMName = 'ManagementOS'

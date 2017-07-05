@@ -1,9 +1,10 @@
 ﻿Configuration SETTeamSwitch
 {
-    Import-DscResource -ModuleName cHyper-V -Name VMSwitch
+    Import-DscResource -ModuleName HyperVDsc -Name VMSwitch
     Import-DscResource -ModuleName PSDesiredStateConfiguration
 
-    VMSwitch HostSwitch {
+    VMSwitch HostSwitch
+    {
         Name = 'HostSwitch'
         Type = 'External'
         AllowManagementOS = $false

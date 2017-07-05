@@ -1,6 +1,6 @@
 ﻿Configuration VMAdapterSettings
 {
-    Import-DscResource -ModuleName cHyper-V -Name VMNetworkAdapterSettings
+    Import-DscResource -ModuleName HyperVDsc -Name VMNetworkAdapterSettings
     Import-DscResource -ModuleName PSDesiredStateConfiguration
 
     VMNetworkAdapterSettings VMAdapterSettings {
