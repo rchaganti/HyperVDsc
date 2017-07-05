@@ -18,34 +18,32 @@ To meet these objectives, I am starting this new repository and will start addin
 
 Here is a list of resources that I have been working on.
 
-| Resource Name  | Description |
-| -------------   | ------------- |
-| VMHostServerConfiguration | Server configuration items in Hyper-V host settings. |
-| VMHostUserConfiguration | User Configuration items in Hyper-V host Settings. |
-| VMHostLiveMigration | Live migration settings for the Hyper-V host.|
-| VMHostReplication | Replication configuration for the Hyper-V host.|
-| VirtualSAN | Virtual SAN Configuration on the Hyper-V host.|
-| VMSwitch | VM switch management.|
-| VMNetworkAdapter | VM network adapter management.|
-| VMNetworkAdapterVlan | VM Network adapter VLAN management.|
-| VMNetworkAdapterSettings | VM network adapter settings management.|
-| SimpleVM | A simple bare-bones VM.|
-| VMSCSIController | VM SCSI controller management. |
-| VMIDEController | VM IDE controller management.|
-| VMVirtualHarddrive | Virtual Hard disk management. |
-| VMVirtualHarddriveQoS | Virtual Hard disk QoS management. |
-| VMDVDDrive | Virtual DVD drive management.|
-| VMIntegrationService | VM Integration Services management. |
-| VMCheckPointConfiguration | VM checkpoint configuration management. |
-| VMStateConfiguration | VM state configuration such as Automatic stop and start actions. |
-| VMMemory | VM memory and dynamic memory configuration.|
-| VMCPU | VM CPU and NUMA configuration.|
-| VMSecureBoot | VM Secure boot configuration.|
-| VMBootOrder | VM boot order configuration.|
-| VMIPAddress | Injects an IP Address into a VM.|
-| WaitForVMGuestIntegration | Wait for VM guest integration service to become available.|
-| VMDscConfigurationPublish | Publish configuration and DSC modules into a VM.|
-| VMDscConfigurationEnact | Enact a pending configuration inside a VM.|
-| VMFile | Copy files and folders in to a VM.|
-
-This list is a wishlist and not everything that we already have.
+| Resource Name  | Description | Status in the repository |
+| -------------   | ------------- | ------- |
+| VMHostServerConfiguration | Server configuration items in Hyper-V host settings. | Not Available |
+| VMHostUserConfiguration | User Configuration items in Hyper-V host Settings. | Not Available |
+| VMHostLiveMigration | Live migration settings for the Hyper-V host.| Not Available |
+| VMHostReplication | Replication configuration for the Hyper-V host.| Not Available |
+| VirtualSAN | Virtual SAN Configuration on the Hyper-V host.| Not Available |
+| VMSwitch | VM switch management.| [Available without tests.](https://github.com/rchaganti/HyperVDsc/tree/dev/DSCResources/VMSwitch) |
+| VMNetworkAdapter | VM network adapter management.| [Available without tests.](https://github.com/rchaganti/HyperVDsc/tree/dev/DSCResources/VMNetworkAdapter) |
+| VMNetworkAdapterVlan | VM Network adapter VLAN management.| [Available without tests.](https://github.com/rchaganti/HyperVDsc/tree/dev/DSCResources/VMNetworkAdapterVlan) |
+| VMNetworkAdapterSettings | VM network adapter settings management.| [Available without tests.](https://github.com/rchaganti/HyperVDsc/tree/dev/DSCResources/VMNetworkAdapterSettings) |
+| SimpleVM | A simple bare-bones VM.| [Available without tests](https://github.com/rchaganti/HyperVDsc/tree/dev/DSCResources/SimpleVM). |
+| VMSCSIController | VM SCSI controller management. | Not Available |
+| VMIDEController | VM IDE controller management.| Not Available |
+| VMVirtualHarddrive | Virtual Hard disk management. | Not Available |
+| VMVirtualHarddriveQoS | Virtual Hard disk QoS management. | Not Available |
+| VMDVDDrive | Virtual DVD drive management.| Not Available |
+| VMIntegrationService | VM Integration Services management. | Not Available |
+| VMCheckPointConfiguration | VM checkpoint configuration management. | Not Available |
+| VMStateConfiguration | VM state configuration such as Automatic stop and start actions. | Not Available |
+| VMMemory | VM memory and dynamic memory configuration.| Not Available |
+| VMCPU | VM CPU and NUMA configuration.| Not Available |
+| VMSecureBoot | VM Secure boot configuration.| Not Available |
+| VMBootOrder | VM boot order configuration.| Not Available |
+| VMIPAddress | Injects an IP Address into a VM.| [Available without tests](https://github.com/rchaganti/HyperVDsc/tree/dev/DSCResources/VMIPAddress).|
+| WaitForVMGuestIntegration | Wait for VM guest integration service to become available.| [Available without tests.](https://github.com/rchaganti/HyperVDsc/tree/dev/DSCResources/WaitForVMGuestIntegration)|
+| VMDscConfigurationPublish | Publish configuration and DSC modules into a VM.| Available without tests.|
+| VMDscConfigurationEnact | Enact a pending configuration inside a VM.| [Available without tests.](https://github.com/rchaganti/HyperVDsc/tree/dev/DSCResources/VMDscConfigurationEnact)|
+| VMFile | Copy files and folders in to a VM.| Not Available.|
