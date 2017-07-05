@@ -1,0 +1,37 @@
+ConvertFrom-StringData @'
+    RoleMissingError = Please ensure that '{0}' role is installed with its PowerShell module.
+    MoreThanOneVMExistsError = More than one VM with the name '{0}' exists.
+    VhdPathDoesNotExistError = Vhd '{0}' does not exist.
+    VhdUnsupportedOnGen2VMError = Generation 2 virtual machines do not support the .VHD virtual disk extension.
+    CheckVM = Checking if a VM exists or not.
+    VMExists = VM '{0}' exists.
+    vmCPUCountDifferent = VM exists with different CPU count. This needs to be updated.
+    vmStartupMemoryDifferent = VM exists with different startup memory. This needs to be updated.
+    vmStateDifferent = VM exists in a different state. This needs to be updated.
+    vmStartActionDifferent = VM exists with a different start action. This needs to be updated.
+    vmStopActionDifferent = VM exists with a different stop action. This needs to be updated.
+    vmDefaultNetAdapterPresent = VM exists with default network adapter. This needs to be removed.
+    vmGuestIntegrationNotEnabled = VM exists with guest integration services disabled. This needs to be enabled.
+    vmGuestIntegrationShouldBeDisabled = VM exists with guest integration services enabled. This needs to be disaled.
+    VhdNotAttached = VM exists with VHD detached. This needs to be updated.
+    VMExistsNoActionNeeded = VM exists with all required configuration. No action needed.
+    VMShouldNotExist = VM exists while it should not. This needs to be removed.
+    VMShouldExist = VM does not exist while it should. 
+    VMDoesNotExistNoActionNeeded = VM does not exist. No action needed.
+    StopRemoveVM = Stopping and removing VM.
+    RemoveVM = Deleting virtual machine.
+    StopVM = Stopping VM.
+    ForceNotSpecified = This action requires VM in stopped state. Specify Force parameters and try again.
+    UpdateVM = Updating VM properties.
+    VMStateChange = VM state change is needed. Updating the VM state.
+    RestoreVMState = Restoring VM state.
+    VMDoesNotExist = Specified VM does not exist.
+    RemoveDefaultNetworkAdapter = Removing Default network adapter.
+    VMCreated = VM created.
+    CreatingVM = Creating VM.
+    VhdAndNewVhdAreExclusive = VhdPath and NewVhdPath properties are mutually exclusive.
+    NewVhdNotAttached = VHD represented by NewVhdPath property is not attached. It will be created and attached.
+    VhdPathNotAttached = VHD represented by VhdPath property is not attached. It will be attached now.      
+    VMWithNoVHD = Creating a VM with no VHD.
+    NewVHDPathShouldNotExist = The VHD specified at NewVHDPath should not already exist.      
+'@

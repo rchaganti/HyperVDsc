@@ -1,0 +1,10 @@
+[ClassVersion("1.0"), FriendlyName("VMDscConfigurationPublish")]
+class VMDscConfigurationPublish : OMI_BaseResource
+{
+    [Key] String VMName;
+    [Write] String ConfigurationMof;
+    [Write] String MetaConfigurationMof;
+    [Write] String ModuleZip;
+    [Required,EmbeddedInstance("MSFT_Credential")] string VMCredential;    
+    [Write,EmbeddedInstance("MSFT_Credential")] string FallbackVMCredential;
+};

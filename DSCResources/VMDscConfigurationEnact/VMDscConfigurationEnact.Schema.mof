@@ -1,0 +1,9 @@
+[ClassVersion("1.0"), FriendlyName("VMDscConfigurationEnact")]
+class VMDscConfigurationEnact : OMI_BaseResource
+{
+    [Key] String VMName;  
+    [Required,EmbeddedInstance("MSFT_Credential")] string VMCredential;
+    [Write,EmbeddedInstance("MSFT_Credential")] string FallbackVMCredential; 
+    [Write] Uint32 EnactTimeoutSeconds;          
+    [Write] Uint32 RetryIntervalSeconds;          
+};
