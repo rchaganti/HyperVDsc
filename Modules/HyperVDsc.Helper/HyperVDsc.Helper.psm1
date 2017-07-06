@@ -65,4 +65,33 @@ function Set-VMState
     }
 }
 
+function Set-VMIntegrationService
+{
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)]
+        [String]
+        $VMName,
+
+        [Parameter(Mandatory)]
+        [String]
+        $IntegrationServiceName,
+
+        [Parameter(Mandatory)]
+        [Boolean]
+        $Enable
+    )
+
+    if ($Enabled)
+    {
+        Write-Verbose -Message ($localizedData.EnableService -f $IntegrationServiceName)
+        Enable-VMIntegrationService -VMName $VMName -Name $IntegrationServiceName -Verbose
+    }
+    else
+    {
+        Write-Verbose -Message ($localizedData.DisableService -f $IntegrationServiceName)
+        Disable-VMIntegrationService -VMName $VMName -Name $IntegrationServiceName -Verbose        
+    }
+}
+
 Export-ModuleMember -Function *

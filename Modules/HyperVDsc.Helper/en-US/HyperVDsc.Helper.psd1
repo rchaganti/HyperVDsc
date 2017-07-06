@@ -5,4 +5,6 @@ ConvertFrom-StringData @'
     VMPausedDesired = Desired state for the VM is paused state.
     SuspendVM = Pausing VM.
     StopVM = Stopping VM.
+    EnableService = Enabling {0}.
+    DisableService = Disabling {0}.
 '@
