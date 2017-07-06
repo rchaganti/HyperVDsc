@@ -20,7 +20,17 @@ else
 }
 #endregion
 
+<#
+.SYNOPSIS
+Gets the current state of the VMHostServerConfiguration resource.
 
+.DESCRIPTION
+Gets the current state of the VMHostServerConfiguration resource.
+
+.PARAMETER IsSingleInstance
+Specifies if this resource instance is a single instance.
+The value to this parameter should always be Yes.
+#>
 function Get-TargetResource
 {
     [CmdletBinding()]
@@ -54,7 +64,35 @@ function Get-TargetResource
     return $configuration
 }
 
+<#
+.SYNOPSIS
+Set the VMHostServerConfiguration resource to desired state.
 
+.DESCRIPTION
+Set the VMHostServerConfiguration resource to desired state.
+
+.PARAMETER IsSingleInstance
+Specifies if this resource instance is a single instance.
+The value to this parameter should always be Yes.
+This is the key property.
+
+.PARAMETER VirtualHardDiskPath
+Specifies the virtual hard disk file path.
+The value should be a folder path and if the path does not exist, it will be created.
+
+.PARAMETER VirtualMachinePath
+Specifies the virtual machine file path.
+The value should be a folder path and if the path does not exist, it will be created.
+
+.PARAMETER MaximumStorageMigrations
+Specifies the maximum number of storage migrations.
+
+.PARAMETER NumaSpanningEnabled
+Specifies if NUMA spanning for VMs should be enabled or not. This is a Boolean value.
+
+.PARAMETER EnableEnhancedSessionMode
+Specifies if the enhanced session mode should be enabled or not. This is a boolean value.
+#>
 function Set-TargetResource
 {
     [CmdletBinding()]
@@ -155,6 +193,35 @@ function Set-TargetResource
     }
 }
 
+<#
+.SYNOPSIS
+Tests if the VMHostServerConfiguration resource is in desired state or not.
+
+.DESCRIPTION
+Tests if the VMHostServerConfiguration resource is in desired state or not.
+
+.PARAMETER IsSingleInstance
+Specifies if this resource instance is a single instance.
+The value to this parameter should always be Yes.
+This is the key property.
+
+.PARAMETER VirtualHardDiskPath
+Specifies the virtual hard disk file path.
+The value should be a folder path and if the path does not exist, it will be created.
+
+.PARAMETER VirtualMachinePath
+Specifies the virtual machine file path.
+The value should be a folder path and if the path does not exist, it will be created.
+
+.PARAMETER MaximumStorageMigrations
+Specifies the maximum number of storage migrations.
+
+.PARAMETER NumaSpanningEnabled
+Specifies if NUMA spanning for VMs should be enabled or not. This is a Boolean value.
+
+.PARAMETER EnableEnhancedSessionMode
+Specifies if the enhanced session mode should be enabled or not. This is a boolean value.
+#>
 function Test-TargetResource
 {
     [CmdletBinding()]

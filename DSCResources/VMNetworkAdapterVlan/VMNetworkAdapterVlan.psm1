@@ -22,25 +22,20 @@ else
 
 <#
 .SYNOPSIS
-Short description
+Gets the current state of the VMNetworkAdapterVlan resource.
 
 .DESCRIPTION
-Long description
+Gets the current state of the VMNetworkAdapterVlan resource.
 
 .PARAMETER Id
-Parameter description
+Specifies an unique identifier for the resource instance.
 
 .PARAMETER Name
-Parameter description
+Specifies the name of the VM Network adapter for which the VLAN configuration needs to be done.
 
 .PARAMETER VMName
-Parameter description
-
-.EXAMPLE
-An example
-
-.NOTES
-General notes
+Specifies the VM Name to which the VM network adapter is connected. 
+Specify ManagementOS as the VM name if you want configure an adapter connected to host OS.
 #>
 Function Get-TargetResource
 {
@@ -107,46 +102,48 @@ Function Get-TargetResource
 
 <#
 .SYNOPSIS
-Short description
+Sets the VMNetworkAdapterVlan resource to a desired state.
 
 .DESCRIPTION
-Long description
+Sets the VMNetworkAdapterVlan resource to a desired state.s
 
 .PARAMETER Id
-Parameter description
+Specifies an unique identifier for the resource instance.
 
 .PARAMETER Name
-Parameter description
+Specifies the name of the VM Network adapter for which the VLAN configuration needs to be done.
 
 .PARAMETER VMName
-Parameter description
+Specifies the VM Name to which the VM network adapter is connected. 
+Specify ManagementOS as the VM name if you want configure an adapter connected to host OS.
 
 .PARAMETER AdapterMode
-Parameter description
+Specifies type of VLAN. Allowed values are "Untagged","Access","Trunk","Community","Isolated","Promiscuous".
+Default value is Untagged.
 
 .PARAMETER VlanId
-Parameter description
+Specifies the VLAN ID that needs to be configured on the VM network adapter.
+Not valid when AdapterMode set to Untagged.
 
 .PARAMETER NativeVlanId
-Parameter description
+Specifies the native VLAN ID that needs to be configured on the VM network adapter.
+Valid only when AdapterMode set to Trunk.
 
 .PARAMETER AllowedVlanIdList
-Parameter description
+Specifies the VLAN ID list that needs to be configured on the VM network adapter.
+Valid only when AdapterMode set to Trunk.
 
 .PARAMETER PrimaryVlanId
-Parameter description
+Specifies the primary VLAN ID that needs to be configured on the VM network adapter.
+Valid only when AdapterMode set to Community or Isolated or Promiscuous.
 
 .PARAMETER SecondaryVlanId
-Parameter description
+Specifies the secondary VLAN ID that needs to be configured on the VM network adapter.
+Valid only when AdapterMode set to Community or Isolated or Promiscuous.
 
 .PARAMETER SecondaryVlanIdList
-Parameter description
-
-.EXAMPLE
-An example
-
-.NOTES
-General notes
+Specifies the primary VLAN ID list that needs to be configured on the VM network adapter.
+Valid only when AdapterMode set to Community or Isolated or Promiscuous.
 #>
 Function Set-TargetResource
 {
@@ -162,7 +159,7 @@ Function Set-TargetResource
         [String] $VMName,
 
         [Parameter()]
-        [ValidateSet('Untagged','Access','Trunk','Communnity','Isolated','Promiscuous')]
+        [ValidateSet('Untagged','Access','Trunk','Community','Isolated','Promiscuous')]
         [String] $AdapterMode = 'Untagged',
 
         [Parameter()]
@@ -287,46 +284,48 @@ Function Set-TargetResource
 
 <#
 .SYNOPSIS
-Short description
+Tests if the VMNetworkAdapterVlan resource is in desired state.
 
 .DESCRIPTION
-Long description
+Tests if VMNetworkAdapterVlan resource is in desired state.
 
 .PARAMETER Id
-Parameter description
+Specifies an unique identifier for the resource instance.
 
 .PARAMETER Name
-Parameter description
+Specifies the name of the VM Network adapter for which the VLAN configuration needs to be done.
 
 .PARAMETER VMName
-Parameter description
+Specifies the VM Name to which the VM network adapter is connected. 
+Specify ManagementOS as the VM name if you want configure an adapter connected to host OS.
 
 .PARAMETER AdapterMode
-Parameter description
+Specifies type of VLAN. Allowed values are "Untagged","Access","Trunk","Community","Isolated","Promiscuous".
+Default value is Untagged.
 
 .PARAMETER VlanId
-Parameter description
+Specifies the VLAN ID that needs to be configured on the VM network adapter.
+Not valid when AdapterMode set to Untagged.
 
 .PARAMETER NativeVlanId
-Parameter description
+Specifies the native VLAN ID that needs to be configured on the VM network adapter.
+Valid only when AdapterMode set to Trunk.
 
 .PARAMETER AllowedVlanIdList
-Parameter description
+Specifies the VLAN ID list that needs to be configured on the VM network adapter.
+Valid only when AdapterMode set to Trunk.
 
 .PARAMETER PrimaryVlanId
-Parameter description
+Specifies the primary VLAN ID that needs to be configured on the VM network adapter.
+Valid only when AdapterMode set to Community or Isolated or Promiscuous.
 
 .PARAMETER SecondaryVlanId
-Parameter description
+Specifies the secondary VLAN ID that needs to be configured on the VM network adapter.
+Valid only when AdapterMode set to Community or Isolated or Promiscuous.
 
 .PARAMETER SecondaryVlanIdList
-Parameter description
-
-.EXAMPLE
-An example
-
-.NOTES
-General notes
+Specifies the primary VLAN ID list that needs to be configured on the VM network adapter.
+Valid only when AdapterMode set to Community or Isolated or Promiscuous.
 #>
 Function Test-TargetResource 
 {
@@ -343,7 +342,7 @@ Function Test-TargetResource
         [String] $VMName,
 
         [Parameter()]
-        [ValidateSet('Untagged','Access','Trunk','Communnity','Isolated','Promiscuous')]
+        [ValidateSet('Untagged','Access','Trunk','Community','Isolated','Promiscuous')]
         [String] $AdapterMode = 'Untagged',
 
         [Parameter()]

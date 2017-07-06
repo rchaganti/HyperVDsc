@@ -20,7 +20,16 @@ else
 }
 #endregion
 
+<#
+.SYNOPSIS
+Gets the current state of the VMIntegrationService resource.
 
+.DESCRIPTION
+Gets the current state of the VMIntegrationService resource.
+
+.PARAMETER VMName
+Specifies the VM for which the the intergration service state needs to be retrieved.
+#>
 function Get-TargetResource
 {
     [CmdletBinding()]
@@ -63,7 +72,34 @@ function Get-TargetResource
     }
 }
 
+<#
+.SYNOPSIS
+Sets the VMIntegrationService resource to desired state.
 
+.DESCRIPTION
+Sets the VMIntegrationService resource to desired state.
+
+.PARAMETER VMName
+Specifies the VM for which the the intergration service state needs to be set into a desired state.
+
+.PARAMETER GuestServiceInterfaceEnabled
+Specifies if the Guest Service Interface should be enabled or disabled. This is a boolean property.
+
+.PARAMETER HeartbeatEnabled
+Specifies if the heartbeat should be enabled or disabled. This is a boolean property.
+
+.PARAMETER KVPExchangeEnabled
+Specifies if the Key-Value Pair Exchange should be enabled or disabled. This is a boolean property.
+
+.PARAMETER ShutdownEnabled
+Specifies if the shutdown should be enabled or disabled. This is a boolean property.
+
+.PARAMETER TimeSynchronizationEnabled
+Specifies if the Time Synchronization should be enabled or disabled. This is a boolean property.
+
+.PARAMETER VSSEnabled
+Specifies if the VSS should be enabled or disabled. This is a boolean property.
+#>
 function Set-TargetResource
 {
     [CmdletBinding()]
@@ -154,7 +190,34 @@ function Set-TargetResource
     }    
 }
 
+<#
+.SYNOPSIS
+Tests if the VMIntegrationService resource is in desired state.
 
+.DESCRIPTION
+Tests if the VMIntegrationService resource is in desired state.
+
+.PARAMETER VMName
+Specifies the VM for which the the intergration service state needs to be set into a desired state.
+
+.PARAMETER GuestServiceInterfaceEnabled
+Specifies if the Guest Service Interface should be enabled or disabled. This is a boolean property.
+
+.PARAMETER HeartbeatEnabled
+Specifies if the heartbeat should be enabled or disabled. This is a boolean property.
+
+.PARAMETER KVPExchangeEnabled
+Specifies if the Key-Value Pair Exchange should be enabled or disabled. This is a boolean property.
+
+.PARAMETER ShutdownEnabled
+Specifies if the shutdown should be enabled or disabled. This is a boolean property.
+
+.PARAMETER TimeSynchronizationEnabled
+Specifies if the Time Synchronization should be enabled or disabled. This is a boolean property.
+
+.PARAMETER VSSEnabled
+Specifies if the VSS should be enabled or disabled. This is a boolean property.
+#>
 function Test-TargetResource
 {
     [CmdletBinding()]
