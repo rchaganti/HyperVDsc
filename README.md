@@ -36,7 +36,7 @@ Here is a list of resources that I have been working on.
 | VMVirtualHarddriveQoS | Virtual Hard disk QoS management. | Not Available |
 | VMDVDDrive | Virtual DVD drive management.| Not Available |
 | VMIntegrationService | VM Integration Services management. | [Available without tests.](https://github.com/rchaganti/HyperVDsc/tree/dev/DSCResources/VMIntegrationService) |
-| VMCheckPointConfiguration | VM checkpoint configuration management. | [Available without tests](https://github.com/rchaganti/HyperVDsc/tree/dev/DSCResources/VMCheckPointConfiguration) |
+| VMCheckPointConfiguration | VM checkpoint configuration management. | [Available without tests](https://github.com/rchaganti/HyperVDsc/tree/dev/DSCResources/VMCheckpointConfiguration) |
 | VMStateConfiguration | VM state configuration such as Automatic stop and start actions. | Not Available |
 | VMMemory | VM memory and dynamic memory configuration.| Not Available |
 | VMCPU | VM CPU and NUMA configuration.| Not Available |
