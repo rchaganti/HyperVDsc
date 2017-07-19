@@ -23,7 +23,8 @@ Here is a list of resources that I have been working on.
 | VMHostServerConfiguration | Server configuration items in Hyper-V host settings. |  [Available without tests](https://github.com/rchaganti/HyperVDsc/tree/dev/DSCResources/VMHostServerConfiguration). |
 | VMHostUserConfiguration | User Configuration items in Hyper-V host Settings. | Not Available |
 | VMHostLiveMigration | Live migration settings for the Hyper-V host.| Not Available |
-| VMHostReplication | Replication configuration for the Hyper-V host.| Not Available |
+| VMReplicationServer | Replication configuration for the Hyper-V host.| Not Available |
+| VMReplicationServerAuthorizationEntry | Authorized server configuration for VM replication server.| Not Available |
 | VirtualSAN | Virtual SAN Configuration on the Hyper-V host.| Not Available |
 | VMSwitch | VM switch management.| [Available without tests.](https://github.com/rchaganti/HyperVDsc/tree/dev/DSCResources/VMSwitch) |
 | VMNetworkAdapter | VM network adapter management.| [Available without tests.](https://github.com/rchaganti/HyperVDsc/tree/dev/DSCResources/VMNetworkAdapter) |
