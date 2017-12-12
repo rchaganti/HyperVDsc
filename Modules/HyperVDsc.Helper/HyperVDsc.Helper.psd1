@@ -1,9 +1,12 @@
 @{
+#Root module
+RootModule = 'HyperVDsc.Helper.psm1'
+
 # Version number of this module.
 ModuleVersion = '1.0.0.0'
 
 # ID used to uniquely identify this module
-GUID = 'cd55515a-1677-41a4-85a3-912c7f753cc7'
+GUID = 'a561409f-f74d-4800-a4f7-136d9e8ad9c3'
 
 # Author of this module
 Author = 'Ravikanth Chaganti'
@@ -18,7 +21,7 @@ Copyright = '(c) 2017 PowerShell Magazine. All rights reserved.'
 Description = 'Module with helper functions for the HyperVDsc Resources.'
 
 # Minimum version of the Windows PowerShell engine required by this module
-PowerShellVersion = '4.0'
+PowerShellVersion = '5.0'
 
 # Minimum version of the common language runtime (CLR) required by this module
 CLRVersion = '4.0'
