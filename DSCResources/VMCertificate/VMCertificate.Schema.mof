@@ -1,8 +1,0 @@
-[ClassVersion("1.0.0.0"), FriendlyName("VMCertificate")]
-class VMCertificate : OMI_BaseResource
-{
-    [Key] String VMName;
-    [Required] String PfxPath;
-    [Required] String Thumbprint;
-    [Required,EmbeddedInstance("MSFT_Credential")] string VMCredential;
-};

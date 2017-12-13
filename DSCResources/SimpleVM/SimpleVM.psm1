@@ -3,7 +3,7 @@ $modulePath = Join-Path -Path (Split-Path -Path (Split-Path -Path $PSScriptRoot 
 
 Import-Module -Name (Join-Path -Path $modulePath `
                                -ChildPath (Join-Path -Path 'HyperVDsc.Helper' `
-                                                     -ChildPath 'HyperVDsc.Helper.psm1'))
+                                                     -ChildPath 'HyperVDsc.Helper.psd1'))
 #endregion
 
 #region localizeddata
@@ -148,7 +148,7 @@ function Set-TargetResource
         [String] $State = 'Running',
 
         [Parameter()]
-        [ValidateRange(1,2)]
+        [ValidateSet(1,2)]
         [UInt32] $Generation = 2,
 
         [Parameter()]
@@ -440,7 +440,7 @@ function Test-TargetResource
         [String] $State = 'Running',
         
         [Parameter()]
-        [ValidateRange(1,2)]
+        [ValidateSet(1,2)]
         [UInt32] $Generation = 2,
 
         [Parameter()]

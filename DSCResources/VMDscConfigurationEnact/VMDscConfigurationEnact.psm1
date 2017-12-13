@@ -3,7 +3,7 @@ $modulePath = Join-Path -Path (Split-Path -Path (Split-Path -Path $PSScriptRoot 
 
 Import-Module -Name (Join-Path -Path $modulePath `
                                -ChildPath (Join-Path -Path 'HyperVDsc.Helper' `
-                                                     -ChildPath 'HyperVDsc.Helper.psm1'))
+                                                     -ChildPath 'HyperVDsc.Helper.psd1'))
 #endregion
 
 #region localizeddata
@@ -90,7 +90,6 @@ Specifies how long to wait between retries until the EnactTimeoutSeconds expires
 function Set-TargetResource
 {
     [CmdletBinding()]
-    [OutputType([System.Boolean])]
     param
     (
         [Parameter(Mandatory)]
@@ -103,10 +102,10 @@ function Set-TargetResource
         [pscredential] $FallbackVMCredential,
 
         [Parameter()]
-        [Int] $EnactTimeoutSeconds = 600,
+        [UInt32] $EnactTimeoutSeconds = 600,
 
         [Parameter()]
-        [int] $RetryIntervalSeconds = 10
+        [UInt32] $RetryIntervalSeconds = 10
     )
 
     if(!(Get-Module -ListAvailable -Name Hyper-V))
@@ -119,96 +118,88 @@ function Set-TargetResource
        Throw ($localizedData.MoreThanOneVMExistsError -f $VMName)
     }
 
-    try
-    {
-        #Create a session over PSDirect
-        Write-Verbose -Message $localizedData.NewPSSession
-        $PSSession = New-VMPSSession -VMName $VMName -VMCredential $VMCredential -FallbackVMCredential $FallbackVMCredential
+    #Create a session over PSDirect
+    Write-Verbose -Message $localizedData.NewPSSession
+    $PSSession = New-VMPSSession -VMName $VMName -VMCredential $VMCredential -FallbackVMCredential $FallbackVMCredential
 
-        if ((Get-DscLCMState -PSSession $PSSession) -eq 'PendingConfiguration')
+    if ((Get-DscLCMState -PSSession $PSSession) -eq 'PendingConfiguration')
+    {
+        #Start the configuration enact and wait for the job to finish
+        Write-Verbose -Message $localizedData.EnactPendingConfig
+        Invoke-Command -Session $PSSession -ScriptBlock {
+            Start-DscConfiguration -UseExisting -Wait -Verbose -Force
+        }
+        
+        Write-Verbose -Message $localizedData.CheckEnactStatus
+        $startTime = Get-Date
+        $enactComplete = $false
+
+        While ((((Get-Date) - $startTime).Seconds -le $EnactTimeoutSeconds) -and (-not $enactComplete))
         {
-            #Start the configuration enact and wait for the job to finish
-            Write-Verbose -Message $localizedData.EnactPendingConfig
-            Invoke-Command -Session $PSSession -ScriptBlock {
-                Start-DscConfiguration -UseExisting -Wait -Verbose -Force
+            if (-not ($PSSession.State -eq 'Opened'))
+            {
+                Write-Verbose -Message $localizedData.NewPSSession
+                $PSSession = New-VMPSSession -VMName $VMName -VMCredential $VMCredential -FallbackVMCredential $FallbackVMCredential
             }
             
-            Write-Verbose -Message $localizedData.CheckEnactStatus
-            $startTime = Get-Date
-            $enactComplete = $false
-
-            While ((((Get-Date) - $startTime).Seconds -le $EnactTimeoutSeconds) -and (-not $enactComplete))
+            switch (Get-DscLCMState -PSSession $PSSession)
             {
-                if (-not ($PSSession.State -eq 'Opened'))
-                {
-                    Write-Verbose -Message $localizedData.NewPSSession
-                    $PSSession = New-VMPSSession -VMName $VMName -VMCredential $VMCredential -FallbackVMCredential $FallbackVMCredential
-                }
-                
-                switch (Get-DscLCMState -PSSession $PSSession)
-                {
-                    "Idle" {
-                        Write-Verbose -Message $localizedData.CheckCompliance
-                        $compliance = Invoke-Command -Session $PSSession -ScriptBlock {
-                            Test-DscConfiguration -Detailed -Verbose    
-                        }
-
-                        if (-not ($compliance.InDesiredState))
-                        {
-                            throw Write-Verbose -Message $localizedData.ErrorInEnact
-                        }
-                        else {
-                            Write-Verbose -Message $localizedData.EnactSuccess
-                            $enactComplete = $true
-                        }
+                "Idle" {
+                    Write-Verbose -Message $localizedData.CheckCompliance
+                    $compliance = Invoke-Command -Session $PSSession -ScriptBlock {
+                        Test-DscConfiguration -Detailed -Verbose    
                     }
 
-                    "PendingReboot" {
-                        Write-Verbose -Message $localizedData.EnactNeedsReboot
-                        $vmObj = Stop-VM -VMName $VMName -Force -Passthru
-                        $vm = Start-VM -VM $vmObj -Passthru                
-
-                        #Wait for VM integration services to start
-                        Write-Verbose -Message $localizedData.WaitingForVMToStart
-                        While ($vm.VMIntegrationService.Where({$_.Name -eq 'Heartbeat'}).PrimaryStatusDescription -ne 'OK')
-                        {
-                            Start-Sleep -Seconds 1 
-                        }
-                        $enactComplete = $false
-                    }            
-
-                    "Busy" {
-                        Write-Verbose -Message $localizedData.EnactInProgress
-                        $enactComplete = $false
+                    if (-not ($compliance.InDesiredState))
+                    {
+                        throw Write-Verbose -Message $localizedData.ErrorInEnact
+                    }
+                    else {
+                        Write-Verbose -Message $localizedData.EnactSuccess
+                        $enactComplete = $true
                     }
                 }
 
-                #Sleep for a few seconds if enact is not complete
-                if (-not $enactComplete)
-                {
-                    Write-Verbose -Message $localizedData.WaitBetweenRetry
-                    Start-Sleep -Seconds $RetryIntervalSeconds                
+                "PendingReboot" {
+                    Write-Verbose -Message $localizedData.EnactNeedsReboot
+                    $vmObj = Stop-VM -VMName $VMName -Force -Passthru
+                    $vm = Start-VM -VM $vmObj -Passthru                
+
+                    #Wait for VM integration services to start
+                    Write-Verbose -Message $localizedData.WaitingForVMToStart
+                    While ($vm.VMIntegrationService.Where({$_.Name -eq 'Heartbeat'}).PrimaryStatusDescription -ne 'OK')
+                    {
+                        Start-Sleep -Seconds 1 
+                    }
+                    $enactComplete = $false
+                }            
+
+                "Busy" {
+                    Write-Verbose -Message $localizedData.EnactInProgress
+                    $enactComplete = $false
                 }
             }
-        
-            Write-Verbose -Message $localizedData.CleanUpPSSession
-            Remove-PSSession -Session $PSSession
-        }
 
-        if (-not($enactComplete))
-        {
-            Write-Warning -Message $localizedData.EnactTimedout
+            #Sleep for a few seconds if enact is not complete
+            if (-not $enactComplete)
+            {
+                Write-Verbose -Message $localizedData.WaitBetweenRetry
+                Start-Sleep -Seconds $RetryIntervalSeconds                
+            }
         }
-
-        #Clean up PSSession
+    
         Write-Verbose -Message $localizedData.CleanUpPSSession
         Remove-PSSession -Session $PSSession
     }
 
-    catch
+    if (-not($enactComplete))
     {
-        Write-Error $_
+        Write-Warning -Message $localizedData.EnactTimedout
     }
+
+    #Clean up PSSession
+    Write-Verbose -Message $localizedData.CleanUpPSSession
+    Remove-PSSession -Session $PSSession
 }
 
 <#
@@ -251,10 +242,10 @@ function Test-TargetResource
         [pscredential] $FallbackVMCredential,
 
         [Parameter()]
-        [Int] $EnactTimeoutSeconds = 600,
+        [UInt32] $EnactTimeoutSeconds = 600,
 
         [Parameter()]
-        [int] $RetryIntervalSeconds = 10
+        [Uint32] $RetryIntervalSeconds = 10
     )
 
     if(!(Get-Module -ListAvailable -Name Hyper-V))
@@ -267,139 +258,25 @@ function Test-TargetResource
        Throw ($localizedData.MoreThanOneVMExistsError -f $VMName)
     }
 
-    try
+    #Create a session over PSDirect
+    Write-Verbose -Message $localizedData.NewPSSession
+    $PSSession = New-VMPSSession -VMName $VMName -VMCredential $VMCredential -FallbackVMCredential $FallbackVMCredential
+
+    #Copy the modules and MOF over PSSession; we will clean it up later
+    #modules get copied to C:\Windows\Temp and then extracted
+    if ((Get-DscLCMState -PSSession $PSSession) -eq 'PendingConfiguration')
     {
-        #Create a session over PSDirect
-        Write-Verbose -Message $localizedData.NewPSSession
-        $PSSession = New-VMPSSession -VMName $VMName -VMCredential $VMCredential -FallbackVMCredential $FallbackVMCredential
-
-        #Copy the modules and MOF over PSSession; we will clean it up later
-        #modules get copied to C:\Windows\Temp and then extracted
-        if ((Get-DscLCMState -PSSession $PSSession) -eq 'PendingConfiguration')
-        {
-            Write-Verbose -Message $localizedData.PendingConfigurationFound
-            $false
-        }
-        else {
-            Write-Verbose -Message $localizedData.NoPendingConfiguration
-            $true
-        }
-
-        #Clean up PSSession
-        Write-Verbose -Message $localizedData.CleanUpPSSession
-        Remove-PSSession -Session $PSSession
-    }
-
-    catch
-    {
-        Write-Error $_
-    }
-}
-
-function Get-DscLCMState
-{
-    [CmdletBinding()]
-    param (
-        $PSSession
-    )
-
-    return (Invoke-Command -Session $PSSession -ScriptBlock { (Get-DscLocalConfigurationManager).LCMState })
-}
-
-function New-VMPSSession
-{
-    [CmdletBinding()]
-    param (
-        [string] $VMName,
-        [pscredential] $VMCredential,
-        [pscredential] $FallbackVMCredential
-    )
-
-    $PSSession = New-PSSession -VMName $VMName -Credential $VMCredential -ErrorAction SilentlyContinue
-    if ($PSSession)
-    {
-        return $PSSession
-    }
-    elseif ($FallbackVMCredential) {
-        #Try fallback creds; needed for domain join computers
-        $PSSession = New-PSSession -VMName $VMName -Credential $FallbackVMCredential -ErrorAction Stop
-        return $PSSession
+        Write-Verbose -Message $localizedData.PendingConfigurationFound
+        $false
     }
     else {
-        Throw $localizedData.ErrorVMSession
-    }
-}
-
-function Wait-ForEnactToComplete
-{
-    [CmdletBinding()]
-    param (
-        [String] $VmName,
-        [pscredential] $VMCredential,
-        [pscredential] $FallbackVMCredential,
-        [int] $EnactTimeoutSeconds = 600,
-        [int] $RetryIntervalSeconds = 10
-    )
-
-    #Start a timeout loop
-    Write-Verbose -Message $localizedData.WaitingForEnact
-    $startTime = Get-Date
-
-    While (((Get-Date) - $startTime).Seconds -ne $EnactTimeoutSeconds)
-    {
-        Write-Verbose -Message $localizedData.NewPSSession
-        $PSSession = New-VMPSSession -VMName $VMName -VMCredential $VMCredential -FallbackVMCredential $FallbackVMCredential
-        $lcmState = Get-DscLCMState -PSSession $PSSession
-
-        switch ($lcmState)
-        {
-            "Idle" {
-                $compliance = Invoke-Command -Session $PSSession -ScriptBlock {
-                    Test-DscConfiguration -Detailed -Verbose    
-                }
-
-                if (-not ($compliance.InDesiredState))
-                {
-                    return 'Failed'
-                }
-                else {
-                    return 'Success'
-                }
-            }
-
-            "PendingReboot" {
-                Write-Verbose -Message $localizedData.EnactNeedsReboot
-                $vmObj = Stop-VM -VMName $VMName -Force -Passthru
-                $vm = Start-VM -VM $vmObj -Passthru
-                
-                Write-Verbose -Message $localizedData.WaitingForVMToStart
-                Start-Sleep -Seconds 60 
-                #Wait for VM integration services to start
-                While ($vm.VMIntegrationService.Where({$_.Name -eq 'Heartbeat'}).PrimaryStatusDescription -ne 'OK')
-                {
-                    Write-Verbose -Message $localizedData.WaitingForVMToStart
-                    Start-Sleep -Seconds 5
-                }
-                $enactNotComplete = $true
-            }            
-
-            "Busy" {
-                    Write-Verbose -Message $localizedData.EnactInProgress
-                    $enactNotComplete = $true
-            }
-        }
-        
-        Write-Verbose -Message $localizedData.CleanUpPSSession
-        Remove-PSSession -Session $PSSession
-
-        #Sleep for a few seconds
-        Start-Sleep -Seconds $RetryIntervalSeconds
+        Write-Verbose -Message $localizedData.NoPendingConfiguration
+        $true
     }
 
-    if ($enactNotComplete)
-    {
-        return 'Timeout'
-    }
+    #Clean up PSSession
+    Write-Verbose -Message $localizedData.CleanUpPSSession
+    Remove-PSSession -Session $PSSession
 }
 
 Export-ModuleMember -Function *-TargetResource

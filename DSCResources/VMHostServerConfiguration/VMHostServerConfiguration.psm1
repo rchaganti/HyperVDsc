@@ -3,7 +3,7 @@ $modulePath = Join-Path -Path (Split-Path -Path (Split-Path -Path $PSScriptRoot 
 
 Import-Module -Name (Join-Path -Path $modulePath `
                                -ChildPath (Join-Path -Path 'HyperVDsc.Helper' `
-                                                     -ChildPath 'HyperVDsc.Helper.psm1'))
+                                                     -ChildPath 'HyperVDsc.Helper.psd1'))
 #endregion
 
 #region localizeddata
@@ -112,7 +112,7 @@ function Set-TargetResource
         $VirtualMachinePath,     
 
         [Parameter()]
-        [int]
+        [Uint32]
         $MaximumStorageMigrations = 2,
 
         [Parameter()]
@@ -242,7 +242,7 @@ function Test-TargetResource
         $VirtualMachinePath,     
 
         [Parameter()]
-        [int]
+        [Uint32]
         $MaximumStorageMigrations = 2,
 
         [Parameter()]

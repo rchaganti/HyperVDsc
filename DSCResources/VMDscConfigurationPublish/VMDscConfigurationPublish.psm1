@@ -3,7 +3,7 @@ $modulePath = Join-Path -Path (Split-Path -Path (Split-Path -Path $PSScriptRoot 
 
 Import-Module -Name (Join-Path -Path $modulePath `
                                -ChildPath (Join-Path -Path 'HyperVDsc.Helper' `
-                                                     -ChildPath 'HyperVDsc.Helper.psm1'))
+                                                     -ChildPath 'HyperVDsc.Helper.psd1'))
 #endregion
 
 #region localizeddata
@@ -93,7 +93,6 @@ which the initial VMCredential will be invalid.
 function Set-TargetResource
 {
     [CmdletBinding()]
-    [OutputType([System.Boolean])]
     param
     (
         [Parameter(Mandatory)]
@@ -145,98 +144,90 @@ function Set-TargetResource
         throw $localizedData.NothingToPublish
     }
 
-    try
+    #Create a session over PSDirect
+    Write-Verbose -Message $localizedData.NewPSSession
+    $PSSession = New-VMPSSession -VMName $VMName -VMCredential $VMCredential -FallbackVMCredential $FallbackVMCredential
+
+    #Copy the meta configuration if it is provided
+    if ($MetaConfigurationMof)
     {
-        #Create a session over PSDirect
-        Write-Verbose -Message $localizedData.NewPSSession
-        $PSSession = New-VMPSSession -VMName $VMName -VMCredential $VMCredential -FallbackVMCredential $FallbackVMCredential
-
-        #Copy the meta configuration if it is provided
-        if ($MetaConfigurationMof)
+        Write-Verbose -Message $localizedData.CheckExistingMetaMof
+        $metaMofExists = Invoke-Command -Session $PSSession -ScriptBlock { Test-Path -Path C:\Windows\System32\Configuration\MetaConfig.mof }
+        
+        if ($metaMofExists)
         {
-            Write-Verbose -Message $localizedData.CheckExistingMetaMof
-            $metaMofExists = Invoke-Command -Session $PSSession -ScriptBlock { Test-Path -Path C:\Windows\System32\Configuration\MetaConfig.mof }
-            
-            if ($metaMofExists)
-            {
-                Write-Verbose -Message $localizedData.BackupExistingMetaMof
-                Invoke-Command -Session $PSSession -ScriptBlock { Copy-Item -path C:\Windows\System32\Configuration\MetaConfig.mof -Destination C:\Windows\System32\Configuration\MetaConfig.backup.mof -Force }
-            }
-            
-            Write-Verbose -Message $localizedData.CopyMetaMof
-            Copy-Item -ToSession $PSSession -Path $MetaConfigurationMof -Destination C:\Windows\System32\Configuration\MetaConfig.mof -Force
-        }        
+            Write-Verbose -Message $localizedData.BackupExistingMetaMof
+            Invoke-Command -Session $PSSession -ScriptBlock { Copy-Item -path C:\Windows\System32\Configuration\MetaConfig.mof -Destination C:\Windows\System32\Configuration\MetaConfig.backup.mof -Force }
+        }
+        
+        Write-Verbose -Message $localizedData.CopyMetaMof
+        Copy-Item -ToSession $PSSession -Path $MetaConfigurationMof -Destination C:\Windows\System32\Configuration\MetaConfig.mof -Force
+    }        
 
-        #Copy the modules and MOF over PSSession; we will clean it up later
-        #modules get copied to C:\Windows\Temp and then extracted
-        if (@('Idle', 'PendingReboot') -contains (Get-DscLCMState -PSSession $PSSession))
+    #Copy the modules and MOF over PSSession; we will clean it up later
+    #modules get copied to C:\Windows\Temp and then extracted
+    if (@('Idle', 'PendingReboot') -contains (Get-DscLCMState -PSSession $PSSession))
+    {
+        if ($ModuleZip)
         {
-            if ($ModuleZip)
-            {
-                #Checks here to ensure the checksum matches
-                $localCheckSum = (Get-FileHash -Path $moduleZip).Hash                
-                $moduleZipName = Split-Path -Path $ModuleZip -Leaf
+            #Checks here to ensure the checksum matches
+            $localCheckSum = (Get-FileHash -Path $moduleZip).Hash                
+            $moduleZipName = Split-Path -Path $ModuleZip -Leaf
 
-                #Check if remote file exists and get hash
-                $remoteChecksum = invoke-Command -Session $PSSession -ScriptBlock { 
-                    if (Test-Path -Path "C:\Windows\Temp\$($using:moduleZipName)") {
-                        (Get-FileHash -Path "C:\Windows\Temp\$($using:moduleZipName)").Hash 
-                    }
+            #Check if remote file exists and get hash
+            $remoteChecksum = invoke-Command -Session $PSSession -ScriptBlock { 
+                if (Test-Path -Path "C:\Windows\Temp\$($using:moduleZipName)") {
+                    (Get-FileHash -Path "C:\Windows\Temp\$($using:moduleZipName)").Hash 
                 }
+            }
 
-                if ($remoteChecksum)
+            if ($remoteChecksum)
+            {
+                #File exists with the same name; lets check if it is same as local file
+                if ($remoteChecksum -eq $localCheckSum)
                 {
-                    #File exists with the same name; lets check if it is same as local file
-                    if ($remoteChecksum -eq $localCheckSum)
-                    {
-                        Write-Verbose -Message $localizedData.ModuleFileMatching
-                    }
-                    else {
-                        Write-Verbose -Message $localizedData.ModuleFileMatchingButNotHash
-                        $moduleZipName = "1_${moduleZipName}"
-                        Copy-Item -Path $ModuleZip -Destination "C:\Windows\Temp\${moduleZipName}" -Force -ToSession $PSSession
-                    }
+                    Write-Verbose -Message $localizedData.ModuleFileMatching
                 }
                 else {
-                    Write-Verbose -Message $localizedData.CopyModuleZip
-                    Copy-Item -Path $ModuleZip -Destination C:\Windows\Temp -Force -ToSession $PSSession                    
-                }
-
-                Write-Verbose -Message $localizedData.ExtractModules
-                Invoke-Command -Session $PSSession -ScriptBlock { 
-                    $moduleSet = Invoke-DscResource -Name Archive -Method Set `
-                                -ModuleName PSDesiredStateConfiguration `
-                                                    -Property @{
-                                'Path'="C:\Windows\Temp\$($using:moduleZipName)"
-                                'Destination'='C:\Program Files\WindowsPowerShell\Modules'
-                                'Ensure' = 'Present'
-                                'Force'=$true
-                            }
+                    Write-Verbose -Message $localizedData.ModuleFileMatchingButNotHash
+                    $moduleZipName = "1_${moduleZipName}"
+                    Copy-Item -Path $ModuleZip -Destination "C:\Windows\Temp\${moduleZipName}" -Force -ToSession $PSSession
                 }
             }
-        
-            #Copy MOF
-            if ($ConfigurationMof)
-            {
-                $configMofName = Split-Path -Path $ConfigurationMof -Leaf
-                Write-Verbose -Message $localizedData.CopyMOF
-                Copy-Item -Path $ConfigurationMof -Destination C:\Windows\System32\Configuration\pending.mof -Force -ToSession $PSSession
+            else {
+                Write-Verbose -Message $localizedData.CopyModuleZip
+                Copy-Item -Path $ModuleZip -Destination C:\Windows\Temp -Force -ToSession $PSSession                    
+            }
+
+            Write-Verbose -Message $localizedData.ExtractModules
+            Invoke-Command -Session $PSSession -ScriptBlock { 
+                $moduleSet = Invoke-DscResource -Name Archive -Method Set `
+                            -ModuleName PSDesiredStateConfiguration `
+                                                -Property @{
+                            'Path'="C:\Windows\Temp\$($using:moduleZipName)"
+                            'Destination'='C:\Program Files\WindowsPowerShell\Modules'
+                            'Ensure' = 'Present'
+                            'Force'=$true
+                        }
             }
         }
-        else
+    
+        #Copy MOF
+        if ($ConfigurationMof)
         {
-            Throw $localizedData.VMLCMStateError
+            $configMofName = Split-Path -Path $ConfigurationMof -Leaf
+            Write-Verbose -Message $localizedData.CopyMOF
+            Copy-Item -Path $ConfigurationMof -Destination C:\Windows\System32\Configuration\pending.mof -Force -ToSession $PSSession
         }
-
-        #Clean up PSSession
-        Write-Verbose -Message $localizedData.CleanUpPSSession
-        Remove-PSSession -Session $PSSession
     }
-
-    catch
+    else
     {
-        Write-Error $_
+        Throw $localizedData.VMLCMStateError
     }
+
+    #Clean up PSSession
+    Write-Verbose -Message $localizedData.CleanUpPSSession
+    Remove-PSSession -Session $PSSession
 }
 
 <#
@@ -316,108 +307,66 @@ function Test-TargetResource
         throw $localizedData.MetaConfigMofNotFound
     }
 
-    try
+    #Create a session over PSDirect
+    Write-Verbose -Message $localizedData.NewPSSession
+    $PSSession = New-VMPSSession -VMName $VMName -VMCredential $VMCredential -FallbackVMCredential $FallbackVMCredential
+
+    #Copy the modules and MOF over PSSession; we will clean it up later
+    #modules get copied to C:\Windows\Temp and then extracted
+    if (@('Idle', 'PendingReboot') -contains (Get-DscLCMState -PSSession $PSSession))
     {
-        #Create a session over PSDirect
-        Write-Verbose -Message $localizedData.NewPSSession
-        $PSSession = New-VMPSSession -VMName $VMName -VMCredential $VMCredential -FallbackVMCredential $FallbackVMCredential
-
-        #Copy the modules and MOF over PSSession; we will clean it up later
-        #modules get copied to C:\Windows\Temp and then extracted
-        if (@('Idle', 'PendingReboot') -contains (Get-DscLCMState -PSSession $PSSession))
+        if ($ModuleZip)
         {
-            if ($ModuleZip)
-            {
-                Write-Verbose -Message $localizedData.CopyModuleZip
-                Copy-Item -Path $ModuleZip -Destination C:\Windows\Temp -Force -ToSession $PSSession
+            Write-Verbose -Message $localizedData.CopyModuleZip
+            Copy-Item -Path $ModuleZip -Destination C:\Windows\Temp -Force -ToSession $PSSession
 
-                #Extract Modules
-                $moduleZipName = Split-Path -Path $ModuleZip -Leaf
-                Write-Verbose -Message $localizedData.ExtractModules
-                Invoke-Command -Session $PSSession -ScriptBlock {           
-                    $moduleSet = Invoke-DscResource -Name Archive -Method Set `
-                                -ModuleName PSDesiredStateConfiguration `
-                                -Property @{
-                                    'Path'="C:\Windows\Temp\$($using:moduleZipName)"
-                                    'Destination'='C:\Program Files\WindowsPowerShell\Modules'
-                                    'Ensure' = 'Present'
-                                    'Force'=$true
-                    }
+            #Extract Modules
+            $moduleZipName = Split-Path -Path $ModuleZip -Leaf
+            Write-Verbose -Message $localizedData.ExtractModules
+            Invoke-Command -Session $PSSession -ScriptBlock {           
+                $moduleSet = Invoke-DscResource -Name Archive -Method Set `
+                            -ModuleName PSDesiredStateConfiguration `
+                            -Property @{
+                                'Path'="C:\Windows\Temp\$($using:moduleZipName)"
+                                'Destination'='C:\Program Files\WindowsPowerShell\Modules'
+                                'Ensure' = 'Present'
+                                'Force'=$true
                 }
             }
+        }
 
-            #Copy MOF
-            $configMofName = Split-Path -Path $ConfigurationMof -Leaf
-            Write-Verbose -Message $localizedData.CopyMOF
-            Copy-Item -Path $ConfigurationMof -Destination C:\Windows\Temp -Force -ToSession $PSSession
+        #Copy MOF
+        $configMofName = Split-Path -Path $ConfigurationMof -Leaf
+        Write-Verbose -Message $localizedData.CopyMOF
+        Copy-Item -Path $ConfigurationMof -Destination C:\Windows\Temp -Force -ToSession $PSSession
 
-            #test complaince with test-dscConfiguration against a reference mOF
-            $complaince = Invoke-Command -Session $PSSession -ScriptBlock {
-                Test-DscConfiguration -ReferenceConfiguration "C:\Windows\Temp\$($using:configMofName)"
-            }
+        #test complaince with test-dscConfiguration against a reference mOF
+        $complaince = Invoke-Command -Session $PSSession -ScriptBlock {
+            Test-DscConfiguration -ReferenceConfiguration "C:\Windows\Temp\$($using:configMofName)"
+        }
+    }
+    else
+    {
+        Throw $localizedData.VMLCMStateError
+    }
+
+    #Clean up PSSession
+    Write-Verbose -Message $localizedData.CleanUpPSSession
+    Remove-PSSession -Session $PSSession
+
+    if ($complaince)
+    {          
+        if ($complaince.InDesiredState)
+        {
+            Write-Verbose -Message $localizedData.SystemInCompliance
+            return $true
         }
         else
         {
-            Throw $localizedData.VMLCMStateError
-        }
-
-        #Clean up PSSession
-        Write-Verbose -Message $localizedData.CleanUpPSSession
-        Remove-PSSession -Session $PSSession
-
-        if ($complaince)
-        {          
-            if ($complaince.InDesiredState)
-            {
-                Write-Verbose -Message $localizedData.SystemInCompliance
-                return $true
-            }
-            else
-            {
-                Write-Verbose -Message $localizedData.SystemNotInCompliance
-                return $false
-            }
+            Write-Verbose -Message $localizedData.SystemNotInCompliance
+            return $false
         }
     }
-
-    catch
-    {
-        Write-Error $_
-    }
-}
-
-function New-VMPSSession
-{
-    [CmdletBinding()]
-    param (
-        [string] $VMName,
-        [pscredential] $VMCredential,
-        [pscredential] $FallbackVMCredential
-    )
-
-    $PSSession = New-PSSession -VMName $VMName -Credential $VMCredential -ErrorAction SilentlyContinue
-    if ($PSSession)
-    {
-        return $PSSession
-    }
-    elseif ($FallbackVMCredential) {
-        #Try fallback creds; needed for domain join computers
-        $PSSession = New-PSSession -VMName $VMName -Credential $FallbackVMCredential -ErrorAction Stop
-        return $PSSession
-    }
-    else {
-        Throw $localizedData.ErrorVMSession
-    }
-}
-
-function Get-DscLCMState
-{
-    [CmdletBinding()]
-    param (
-        $PSSession
-    )
-
-    return (Invoke-Command -Session $PSSession -ScriptBlock { (Get-DscLocalConfigurationManager).LCMState })
 }
 
 Export-ModuleMember -Function *-TargetResource
