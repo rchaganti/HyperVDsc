@@ -7,4 +7,7 @@ ConvertFrom-StringData @'
     StopVM = Stopping VM.
     EnableService = Enabling {0}.
     DisableService = Disabling {0}.
+    MappingExists = VM Network adapter mapping exists.
+    MappingDoesNotExist = VM Network adapter mapping does not exist.
+    MappingNeedsAnUpdate = VM Network adapter mapping needs an update.
 '@

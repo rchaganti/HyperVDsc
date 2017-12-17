@@ -200,4 +200,57 @@ function Wait-ForEnactToComplete
     }
 }
 
+function Test-VMNetworkAdapterTeamMapping
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [String]
+        $VMNetworkAdapterName,
+
+        [Parameter(Mandatory = $true)]
+        [String]
+        $PhysicalNetAdapterName,
+
+        [Parameter(Mandatory = $true)]
+        [String]
+        $VMName
+    )
+
+    $params = @{
+        VMNetworkAdapterName = $VMNetworkAdapterName
+    }
+
+    if ($VMName -eq 'ManagementOS')
+    {
+        $params.Add('ManagementOS', $true)
+    }
+    else
+    {
+        $params.Add('VMName', $VMName)    
+    }
+
+    $netAdapterMapping = Get-VMNetworkAdapterTeamMapping @params
+
+    if ($netAdapterMapping)
+    {
+        #Check if the mapping exists in desired state
+        if ($netAdapterMapping.NetAdapterName -eq $PhysicalNetAdapterName)
+        {
+            Write-Verbose -Message $localizedData.MappingExists
+            return $true
+        }
+        else
+        {
+            Write-Verbose -Message $localizedData.MappingDoesNotExist
+            return $false
+        }
+    }
+    else
+    {
+        Write-Verbose -Message $localizedData.MappingNeedsAnUpdate
+        return $false
+    }
+}
 Export-ModuleMember -Function *

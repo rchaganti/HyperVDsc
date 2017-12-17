@@ -59,6 +59,7 @@ function Get-TargetResource
         MaximumStorageMigrations = $vmHost.MaximumStorageMigrations
         NumaSpanningEnabled = $vmHost.NumaSpanningEnabled
         EnableEnhancedSessionMode = $vmHost.EnableEnhancedSessionMode
+        VirtualMachineMigrationPerformanceOption = $vmHost.VirtualMachineMigrationPerformanceOption
     }
 
     return $configuration
@@ -121,7 +122,12 @@ function Set-TargetResource
 
         [Parameter()]
         [Boolean]
-        $EnableEnhancedSessionMode = $false
+        $EnableEnhancedSessionMode = $false,
+
+        [Parameter()]
+        [ValidateSet('SMB','Compression','TCPIP')]
+        [String]
+        $VirtualMachineMigrationPerformanceOption = 'Compression'
     )
 
     if(!(Get-Module -ListAvailable -Name Hyper-V))
@@ -179,6 +185,13 @@ function Set-TargetResource
         $setParameters.Add('EnableEnhancedSessionMode', $EnableEnhancedSessionMode)
         $setNeeded = $true
     }
+
+    if ($vmHost.VirtualMachineMigrationPerformanceOption -ne $VirtualMachineMigrationPerformanceOption)
+    {
+        Write-Verbose -Message $localizedData.ChangeLMOption
+        $setParameters.Add('VirtualMachineMigrationPerformanceOption', $VirtualMachineMigrationPerformanceOption)
+        $setNeeded = $true
+    }    
 
     if ($setNeeded)
     {
@@ -251,7 +264,12 @@ function Test-TargetResource
 
         [Parameter()]
         [Boolean]
-        $EnableEnhancedSessionMode = $false   
+        $EnableEnhancedSessionMode = $false,
+
+        [Parameter()]
+        [ValidateSet('SMB','Compression','TCPIP')]
+        [String]
+        $VirtualMachineMigrationPerformanceOption = 'Compression'
     )
 
     if(!(Get-Module -ListAvailable -Name Hyper-V))
@@ -289,6 +307,12 @@ function Test-TargetResource
     if ($vmHost.EnableEnhancedSessionMode -ne $EnableEnhancedSessionMode)
     {
         Write-Verbose -Message $localizedData.EesmNotMatching
+        return $false
+    }
+
+    if ($vmHost.VirtualMachineMigrationPerformanceOption -ne $VirtualMachineMigrationPerformanceOption)
+    {
+        Write-Verbose -Message $localizedData.LMMigrationOptionNotMatching
         return $false
     }
 

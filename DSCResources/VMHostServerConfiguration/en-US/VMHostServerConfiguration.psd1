@@ -15,4 +15,6 @@ ConvertFrom-StringData @'
     RebootRequired = Reboot is required to complete server configuration change.
     CannotChangeNse = NUMA spanning configuration cannot be changed while the host has running VMs.
     EverythingConfiguredAsNeeded = VM host server settings are configured as needed. No action needed.
+    LMMigrationOptionNotMatching = Host live migration option not matching.
+    ChangeLMOption = Changing LM Migration option.
 '@

@@ -1,0 +1,8 @@
+[ClassVersion("1.0.0.0"), FriendlyName("VMNetworkAdapterTeamMapping")]
+class VMNetworkAdapterTeamMapping : OMI_BaseResource
+{
+	[Key] String VMNetworkAdapterName;
+    [Required] String PhysicalNetAdapterName;
+    [Required] String VMName;
+    [Write, ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
+};
