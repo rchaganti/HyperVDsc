@@ -410,7 +410,10 @@ Function Test-TargetResource
             -and $adapterExists.BandwidthSetting.MinimumBandwidthAbsolute -eq $MinimumBandwidthAbsolute `
             -and $adapterExists.VMQWeight -eq $VMQWeight `
             -and $adapterExists.PortMirroringMode -eq $PortMirroring `
-            -and $adapterExists.DeviceNaming -eq $DeviceNaming
+            -and ( `
+                 $adapterExists.DeviceNaming -eq $DeviceNaming `
+                 -or $VMName -eq 'ManagementOS' `
+                 )
         )
         {
             Write-Verbose $localizedData.VMNetAdapterExistsNoActionNeeded
