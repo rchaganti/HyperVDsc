@@ -156,46 +156,6 @@ function Set-TargetResource
 
     }
 
-    #We don't need to check for mismatches in condfiguration. 
-    #Create the right argument list and set
-    Write-Verbose -Message $localizedData.SetVMReplicationServer
-
-    $setParameters = @{
-        ReplicationEnabled = $ReplicationEnabled
-    }
-
-    if ($ReplicationEnabled)
-    {
-        Write-Verbose -Message $localizedData.EnableReplication
-        $setParameters.Add('AllowedAuthenticationType', $AllowedAuthenticationType)
-        $setParameters.Add('ReplicationAllowedFromAnyServer', $ReplicationAllowedFromAnyServer)
-
-        switch ($AllowedAuthenticationType)
-        {
-            "Kerberos" {
-                $setParameters.Add('KerberosAuthenticationPort', $KerberosAuthenticationPort)
-            }
-
-            "Certificate" {
-                $setParameters.Add('CertificateAuthenticationPort', $CertificateAuthenticationPort)
-                $setParameters.Add('CertificateThumbprint', $CertificateThumbprint)
-            }
-
-            "CertificateAndKerberos" {
-                $setParameters.Add('KerberosAuthenticationPort', $KerberosAuthenticationPort)
-                $setParameters.Add('CertificateAuthenticationPort', $CertificateAuthenticationPort)
-                $setParameters.Add('CertificateThumbprint', $CertificateThumbprint)
-            }
-        }
-
-        if ($ReplicationAllowedFromAnyServer)
-        {
-            $setParameters.Add('DefaultStorageLocation', $DefaultStorageLocation)
-        }
-    }
-
-    Write-Verbose -Message $localizedData.SetVMReplicationServer
-    Set-VMReplicationServer @setParameters
 }
 
 <#
