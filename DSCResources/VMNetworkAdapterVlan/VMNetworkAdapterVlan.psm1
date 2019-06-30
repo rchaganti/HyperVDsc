@@ -442,7 +442,7 @@ Function Test-TargetResource
     try 
     {
         #There is a remote timing issue that occurs when VLAN is set just after creating a VM Adapter. This needs more investigation. Sleep until then.
-        Start-Sleep -Seconds 10
+        #Start-Sleep -Seconds 10
         Write-Verbose $localizedData.GetVMNetAdapter
         $adapterExists = Get-VMNetworkAdapter @arguments -ErrorAction SilentlyContinue
     

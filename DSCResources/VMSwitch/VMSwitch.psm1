@@ -421,6 +421,10 @@ function Set-TargetResource
                 {
                     $parameters["AllowManagementOS"] = $AllowManagementOS
                 }
+                if($NetAdapterName.Count -gt 1)
+                {
+                    $parameters["EnableEmbeddedTeaming"] = $true                 
+                }
             }
             else
             { 
@@ -428,7 +432,18 @@ function Set-TargetResource
             }
             
             Write-Verbose -Message $localizedData.CreateSwitch
-            $null = New-VMSwitch @parameters
+            $switch = New-VMSwitch @parameters
+
+            # Set the team if it's a SET Switch and the parameters are specified
+            if($parameters["EnableEmbeddedTeaming"] -eq $true -and (
+                $PSBoundParameters.ContainsKey('LoadBalancingAlgorithm') -or
+                $PSBoundParameters.ContainsKey('TeamingMode')
+                )
+            )
+            {
+                Write-Verbose -Message $localizedData.UpdateSETTeam
+                Set-VMSwitchTeam -Name $switch.Name -LoadBalancingAlgorithm $LoadBalancingAlgorithm -TeamingMode $TeamingMode -Verbose
+            }
         }
     }
     # Ensure is set to "Absent", remove the switch
